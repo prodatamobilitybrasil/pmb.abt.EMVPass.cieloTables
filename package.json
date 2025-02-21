@@ -1,0 +1,39 @@
+{
+  "name": "pmb.abt.emvpass.cielotables",
+  "version": "1.0.0",
+  "description": "Aplicação responsável por gerenciar a atualização de informações sobre Products, Bins e EMVs da Cielo.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "test": "jest",
+    "prepare": "husky .config"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prodatamobilitybrasil/pmb.abt.EMVPass.cieloTables.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prodatamobilitybrasil/pmb.abt.EMVPass.cieloTables/issues"
+  },
+  "homepage": "https://github.com/prodatamobilitybrasil/pmb.abt.EMVPass.cieloTables#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^19.7.1",
+    "@commitlint/config-conventional": "^19.7.1",
+    "@types/jest": "^29.5.14",
+    "@types/mongodb": "^4.0.6",
+    "husk": "^0.5.3",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "mongodb": "^6.13.1"
+  }
+}

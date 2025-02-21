@@ -1,0 +1,32 @@
+import { ObjectId } from "mongodb";
+
+export interface ICieloEMV extends Document {
+    _id?: ObjectId;
+    Aid: number;
+    TagsFirst: string;
+    TagsSecond: string;
+    IdxRecord: 1;
+    Type: number;
+    RCodeFirst: string;
+    RCodeSecond: string;
+    InvalidateFunctionIfCardIsOnBlacklist: boolean;
+    RequireBINToBeInCardRangeTable: boolean;
+    StoreTransactionsRejectedByTerminalAppAndSendToHost: boolean;
+    AllowOnlineAuthorizationTransactionRequest: boolean;
+    AllowExtendedCardHolderName: boolean;
+    NatEmvConctactRiskFloorLimit: number;
+    NatEmvConctactRiskMinValue: number;
+    NatEmvConctactRiskMinPercent: number;
+    NatEmvConctactRiskMaxPercent: number;
+    NatEmvConctactlessRiskFloorLimit: number;
+    NatEmvConctactlessTransactionLimit: number;
+    NatEmvConctactlessCvmRequiredLimit: number;
+    IntEmvConctactRiskFloorLimit: number;
+    IntEmvConctactRiskMinValue: number;
+    IntEmvConctactRiskMinPercent: number;
+    IntEmvConctactRiskMaxPercent: number;
+    IntEmvConctactlessRiskFloorLimit: number;
+    IntEmvConctactlessTransactionLimit: number;
+    IntEmvConctactlessCvmRequiredLimit: number;
+    ProductIds: number[];
+};
