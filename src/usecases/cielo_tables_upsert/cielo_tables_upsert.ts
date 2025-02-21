@@ -1,12 +1,12 @@
 import { ICieloBin } from "../../entities/cielo_bin";
 import { ICieloEMV } from "../../entities/cielo_emv";
 import { ICieloProduct } from "../../entities/cielo_product";
-import { IConfigEMV } from "../../entities/config_emv";
+import { IInitializationEMV } from "../../entities/initialization_emv";
 import { CieloTablesGateway } from "../../gateways/cielo_tables/cielo_tables_gateway";
 import { CieloBinsRepository } from "../../repository/cielo_bins/cielo_bins_repository";
 import { CieloEMVRepository } from "../../repository/cielo_emv/cielo_emv_repository";
 import { CieloProductsRepository } from "../../repository/cielo_products/cielo_products_repository";
-import { ConfigEMVRepository } from "../../repository/config_emv/config_emv_repository";
+import { InitializationEMVRepository } from "../../repository/initialization_emv/initialization_emv_repository";
 import { InitializationVersion } from "../initialization_version/initialization_version";
 
 export class CieloTablesUpsertUsecase {
@@ -15,13 +15,18 @@ export class CieloTablesUpsertUsecase {
         private readonly cielo_bins_repository: CieloBinsRepository,
         private readonly cielo_products_repository: CieloProductsRepository,
         private readonly cielo_tables_gateway: CieloTablesGateway,
-        private readonly config_emv_repository: ConfigEMVRepository,
+        private readonly initialization_emv_repository: InitializationEMVRepository,
     ) {}
 
     async execute(newVersion?: number): Promise<void> {
 
+        console.log(`${new Date().toISOString()} - Update Version Start - NewVersion: ${newVersion}`);
+
         const currentInitializationVersion = InitializationVersion.get();
         const versionInProcess = InitializationVersion.getInProcess();
+
+        console.log(`${new Date().toISOString()} - Update Version Start - CurrentVersion: ${currentInitializationVersion}`);
+        console.log(`${new Date().toISOString()} - Update Version Start - VersionInProcess: ${versionInProcess}`);
 
         if (newVersion) {
             if (currentInitializationVersion === newVersion) throw new Error("Cielo tables version alreadly updated!");
@@ -33,21 +38,28 @@ export class CieloTablesUpsertUsecase {
         const cieloResponse = await this.cielo_tables_gateway.execute();
         if (!cieloResponse) throw new Error(`Cielo Response is Empty!\nDATA: ${cieloResponse}`);
 
+        console.log(`${new Date().toISOString()} - Update Version Start - CieloVersion: ${cieloResponse.InitializationVersion}`);
+
         if (!newVersion) {
             if (currentInitializationVersion === cieloResponse.InitializationVersion) throw new Error("Cielo tables alreadly updated!");
 
             InitializationVersion.setInProcess(cieloResponse.InitializationVersion);
         }
 
-        const config_emv = await this.config_emv_repository.find();
+        const config_emv = await this.initialization_emv_repository.find();
+
+        console.log(`${new Date().toISOString()} - Update Version Start - DatabaseVersion: ${config_emv?.InitializationVersion}`);
+
         if(config_emv?.InitializationVersion === cieloResponse.InitializationVersion) throw new Error("Cielo tables alreadly updated!");
 
         const { Emv, Bins, Products } = cieloResponse;
 
-        console.log("EMV: ", Emv.length, "Bins: ", Bins.length, "Products: ", Products.length);
+        var initializationEMV = {} as IInitializationEMV;
 
         const updateEmv = async () => {
             const currentEmvs = await this.cielo_emv_repository.find() as ICieloEMV[];
+            console.log(`${new Date().toISOString()} - Update Version Start - EMVsInDatabase: ${currentEmvs.length} EMVsFromCielo: ${Emv.length}`);
+
             if (!currentEmvs.length) await this.cielo_emv_repository.insert(Emv);
             else if (currentEmvs.length < Emv.length) {
                 const mapEmvs = new Map<number, ICieloEMV>();
@@ -58,11 +70,14 @@ export class CieloTablesUpsertUsecase {
                     if (!emv) await this.cielo_emv_repository.insert([Emv[i]]);
                 }
             }
-            console.log("EMV UPDATED");
+            console.log(`${new Date().toISOString()} - Update Version Start - EMVsUpdateds: ${Emv.length - currentEmvs.length}`);
+            initializationEMV.EmvsUpdated = Emv.length - currentEmvs.length;
         };
 
         const updateBins = async () => {
             const currentBins = await this.cielo_bins_repository.find() as ICieloBin[];
+            console.log(`${new Date().toISOString()} - Update Version Start - BinsInDatabase: ${currentBins.length} BinsFromCielo: ${Bins.length}`);
+
             if (!currentBins.length) await this.cielo_bins_repository.insert(Bins);
             else if (currentBins.length < Bins.length) {
                 const mapBins = new Map<string, ICieloBin>();
@@ -73,11 +88,14 @@ export class CieloTablesUpsertUsecase {
                     if (!bin) await this.cielo_bins_repository.insert([Bins[i]]);
                 }
             } 
-            console.log("BINS UPDATED");
+            console.log(`${new Date().toISOString()} - Update Version Start - BinsUpdateds: ${Bins.length - currentBins.length}`);
+            initializationEMV.BinsUpdated = Bins.length - currentBins.length;
         };
 
         const updateProducts = async () => {
             const currentProducts = await this.cielo_products_repository.find() as ICieloProduct[];
+            console.log(`${new Date().toISOString()} - Update Version Start - ProductsInDatabase: ${currentProducts.length} ProductsFromCielo: ${Products.length}`);
+
             if (!currentProducts.length) await this.cielo_products_repository.insert(Products);
             else if (currentProducts.length < Products.length) {
                 const mapProducts = new Map<number, ICieloProduct>();
@@ -88,7 +106,8 @@ export class CieloTablesUpsertUsecase {
                     if (!product) await this.cielo_products_repository.insert([Products[i]]);
                 }
             }
-            console.log("PRODUCTS UPDATED");
+            console.log(`${new Date().toISOString()} - Update Version Start - ProductsUpdateds: ${Products.length - currentProducts.length}`);
+            initializationEMV.ProductsUpdated = Products.length - currentProducts.length;
         };
 
         await updateEmv();
@@ -96,9 +115,10 @@ export class CieloTablesUpsertUsecase {
         await updateProducts();
 
         InitializationVersion.set(cieloResponse.InitializationVersion);
+        initializationEMV.InitializationVersion = cieloResponse.InitializationVersion;
+        initializationEMV.date = new Date();
 
-        await this.config_emv_repository.insert({ InitializationVersion: cieloResponse.InitializationVersion } as IConfigEMV);
-
-        console.log("Cielo Tables Updated with success!");
+        await this.initialization_emv_repository.insert(initializationEMV);
+        console.log(`${new Date().toISOString()} - Update Version Start - Cielo Tables Updated With Success!`);
     }
 }

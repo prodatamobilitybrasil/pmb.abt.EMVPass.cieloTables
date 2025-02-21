@@ -3,6 +3,7 @@ import { CieloTablesUpdateController } from "../controller/cielo_tables_update_c
 
 export class Router {
     static async handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
+        console.log(`${new Date().toISOString()} - Request Received - ${req.method} ${req.url}`);
 
         if (req.method === "GET" && req.url === "/") {
             res.writeHead(200, { "Content-Type": "application/json" });

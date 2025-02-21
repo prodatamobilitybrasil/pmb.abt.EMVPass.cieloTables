@@ -1,17 +1,17 @@
 import { Collection, ObjectId } from "mongodb";
 import { INoSQLRepository } from "../no_sql_repository";
 import { MongoDB } from "../../infra/mongo_db/mongo_db";
-import { IConfigEMV } from "../../entities/config_emv";
+import { IInitializationEMV } from "../../entities/initialization_emv";
 
-export class ConfigEMVRepository implements INoSQLRepository<IConfigEMV> {
-    private collection?: Collection<IConfigEMV>;
+export class InitializationEMVRepository implements INoSQLRepository<IInitializationEMV> {
+    private collection?: Collection<IInitializationEMV>;
     constructor(private readonly mongo: MongoDB) {}
 
     private async init(): Promise<void> {
-        if (!this.collection) this.collection = await this.mongo.collection<IConfigEMV>("configEMV");
+        if (!this.collection) this.collection = await this.mongo.collection<IInitializationEMV>("initializationEMV");
     }
 
-    async insert(data: IConfigEMV): Promise<ObjectId | number | undefined> {
+    async insert(data: IInitializationEMV): Promise<ObjectId | number | undefined> {
         try {
             await this.init();
             const result = await this.collection?.insertOne(data);
@@ -21,17 +21,17 @@ export class ConfigEMVRepository implements INoSQLRepository<IConfigEMV> {
         }
     }
     
-    async find(): Promise<IConfigEMV | null | undefined> {
+    async find(): Promise<IInitializationEMV | null | undefined> {
         try {
             await this.init();
-            const result = await this.collection?.findOne();
-            return result;
+            const result = await this.collection?.find().sort({ date: -1 }).limit(1).toArray();
+            return result![0];
         } catch(err) {
             console.log(`Error to find data!\n${err}`);
         }
     }
 
-    async update(id: ObjectId, toUpdate: IConfigEMV): Promise<number | undefined> {
+    async update(id: ObjectId, toUpdate: IInitializationEMV): Promise<number | undefined> {
         try {
             await this.init();
             const result = await this.collection?.updateOne({ _id: id }, { $set: { ...toUpdate } });
