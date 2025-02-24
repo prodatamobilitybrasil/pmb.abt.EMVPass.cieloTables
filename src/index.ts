@@ -4,13 +4,16 @@ import { Router } from "./router";
 import { MongoDB } from "./infra/mongo_db/mongo_db";
 import cielo_tables_init_usecase from "./usecases/cielo_tables_init";
 import { CieloAuthGateway } from "./gateways/cielo_auth/cielo_auth_gateway";
+import { HttpException } from "./package/exception/http/http_exception";
 
 dotenv.config();
 
 const mongo_db = new MongoDB();
 mongo_db.connect();
 
-const cieloAuth = new CieloAuthGateway();
+const httpException = new HttpException();
+
+const cieloAuth = new CieloAuthGateway(httpException);
 cieloAuth.execute();
 
 const server = createServer(Router.handle);

@@ -1,3 +1,4 @@
+import { Log } from "../../package/exception/logger/logger";
 import { InitializationEMVRepository } from "../../repository/initialization_emv/initialization_emv_repository";
 import { CieloTablesUpsertUsecase } from "../cielo_tables_upsert/cielo_tables_upsert";
 import { InitializationVersion } from "../initialization_version/initialization_version";
@@ -12,17 +13,19 @@ export class CieloTablesInitUsecase {
     async execute(): Promise<void> {
         try {
             const version = InitializationVersion.get();
-            console.log(`${new Date().toISOString()} - Initialization Start - CurrentVersion: ${version}`);
+            Log("Cielo Tables Initialization", `Start - CurrentVersion: ${version}`);
 
             if (version === 0) {
-                const config_emv = await this.initialization_emv_repository.find();
-                console.log(`${new Date().toISOString()} - Initialization Start - DatabaseVersion: ${config_emv?.InitializationVersion}`);
+                const initialization_emv = await this.initialization_emv_repository.find();
                 
-                if (config_emv?.InitializationVersion) InitializationVersion.set(config_emv.InitializationVersion);
+                if (initialization_emv?.InitializationVersion) {
+                    InitializationVersion.set(initialization_emv.InitializationVersion);
+                    Log("Cielo Tables Initialization", `DatabaseVersion: ${initialization_emv?.InitializationVersion} is Current!`);
+                }
                 else await this.cielo_tables_upsert.execute();
             }
         } catch(err) {
-            console.log("Error to init cielo tables!", err);
+            Log("Cielo Tables Initialization", `${err}`);
         }
     }
 }

@@ -2,10 +2,11 @@ import { Collection, ObjectId } from "mongodb";
 import { INoSQLRepository } from "../no_sql_repository";
 import { MongoDB } from "../../infra/mongo_db/mongo_db";
 import { IInitializationEMV } from "../../entities/initialization_emv";
+import { MongoDBException } from "../../package/exception/mongo_db/mongo_db_exception";
 
 export class InitializationEMVRepository implements INoSQLRepository<IInitializationEMV> {
     private collection?: Collection<IInitializationEMV>;
-    constructor(private readonly mongo: MongoDB) {}
+    constructor(private readonly mongo: MongoDB, private readonly exception: MongoDBException) {}
 
     private async init(): Promise<void> {
         if (!this.collection) this.collection = await this.mongo.collection<IInitializationEMV>("initializationEMV");
@@ -17,7 +18,7 @@ export class InitializationEMVRepository implements INoSQLRepository<IInitializa
             const result = await this.collection?.insertOne(data);
             return result?.insertedId;
         } catch(err) {
-            console.log(`Error to insert data!\nData: ${data}\n${err}`);
+            throw this.exception.handle(this.collection?.collectionName!, "insert", data);
         }
     }
     
@@ -27,7 +28,7 @@ export class InitializationEMVRepository implements INoSQLRepository<IInitializa
             const result = await this.collection?.find().sort({ date: -1 }).limit(1).toArray();
             return result![0];
         } catch(err) {
-            console.log(`Error to find data!\n${err}`);
+            throw this.exception.handle(this.collection?.collectionName!, "find");
         }
     }
 
@@ -37,12 +38,11 @@ export class InitializationEMVRepository implements INoSQLRepository<IInitializa
             const result = await this.collection?.updateOne({ _id: id }, { $set: { ...toUpdate } });
             return result?.modifiedCount;
         } catch(err) {
-            console.log(`Error to update data!\nID: ${JSON.stringify(id)}\nUpdate: ${JSON.stringify(toUpdate)}\n${err}`);
+            throw this.exception.handle(this.collection?.collectionName!, "update", id, toUpdate);
         }
     }
 
     delete(id: ObjectId): Promise<number | undefined> {
         throw new Error("Method not implemented.");
     }
-
 }
