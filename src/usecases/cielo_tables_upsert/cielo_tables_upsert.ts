@@ -64,10 +64,6 @@ export class CieloTablesUpsertUsecase {
                 throw this.unxpected_exception.handle("Cielo tables alreadly updated!", { databaseVersion: initialization_emv.InitializationVersion, cieloVersion: cieloResponse.InitializationVersion });
     
             const { Emv, Bins, Products } = cieloResponse;
-
-            console.log("EMV: ", Emv[0]);
-            console.log("BINS: ", Bins[0]);
-            console.log("PRODUCTS: ", Products[0]);
     
             var initializationEMV = {} as IInitializationEMV;
     
