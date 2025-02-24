@@ -7,7 +7,6 @@ import { HttpException } from "../../../src/package/exception/http/http_exceptio
 import { InitializationEMVRepository } from "../../../src/repository/initialization_emv/initialization_emv_repository";
 import { MongoDB } from "../../../src/infra/mongo_db/mongo_db";
 import { MongoDBException } from "../../../src/package/exception/mongo_db/mongo_db_exception";
-import { IInitializationEMV } from "../../../src/entities/initialization_emv";
 import { CieloEMVRepository } from "../../../src/repository/cielo_emv/cielo_emv_repository";
 import { CieloBinsRepository } from "../../../src/repository/cielo_bins/cielo_bins_repository";
 import { CieloProductsRepository } from "../../../src/repository/cielo_products/cielo_products_repository";
@@ -29,6 +28,8 @@ describe("Teste Usecases Cielo Tables", () => {
     const products_repository = new CieloProductsRepository(mongo_db, mongo_exception);
 
     const latestVersion = 1739301918964;
+    const minorVersion = 1739301918963
+    const otherVersion = 1234567891011;
 
     test("Authorization Test", async () => await gateway.execute());
 
@@ -40,35 +41,35 @@ describe("Teste Usecases Cielo Tables", () => {
         await cielo_tables_upsert_usecase.execute();
     });
 
-    test("Test Update Cielo Tables - With version", async () => {
-        InitializationVersion.set(1739301918964);
+    test("Test Update Cielo Tables - With equal version", async () => {
+        InitializationVersion.set(latestVersion);
         await cielo_tables_upsert_usecase.execute(latestVersion);
     });
 
-    test("Test Update Cielo Tables - With version", async () => {
-        InitializationVersion.set(1739301918963);
+    test("Test Update Cielo Tables - With minor version", async () => {
+        InitializationVersion.set(minorVersion);
         await cielo_tables_upsert_usecase.execute(latestVersion);
     });
 
-    test("Test Update Cielo Tables - With version", async () => {
+    test("Test Update Cielo Tables - With Other version", async () => {
         await initialization_emv_repository.delete();
-        InitializationVersion.set(12345);
-        InitializationVersion.setInProcess(12345);
+        InitializationVersion.set(otherVersion);
+        InitializationVersion.setInProcess(otherVersion);
         await cielo_tables_upsert_usecase.execute(latestVersion);
     });
 
-    test("Test Update Cielo Tables - With version", async () => {
+    test("Test Update Cielo Tables - With other version and clean collections", async () => {
         await initialization_emv_repository.delete();
         await emvs_repository.delete();
         await bins_repository.delete();
         await products_repository.delete();
         
-        InitializationVersion.set(12345);
-        InitializationVersion.setInProcess(12345);
+        InitializationVersion.set(otherVersion);
+        InitializationVersion.setInProcess(otherVersion);
         await cielo_tables_upsert_usecase.execute(latestVersion);
     });
 
-    test("Test Update Cielo Tables - With version", async () => {
+    test("Test Update Cielo Tables - With other version and removing one emv, bin, product", async () => {
         await initialization_emv_repository.delete();
         const emv = await emvs_repository.find() as ICieloEMV[];
         await emvs_repository.delete(emv[0]._id);
@@ -77,8 +78,8 @@ describe("Teste Usecases Cielo Tables", () => {
         const products = await products_repository.find() as ICieloProduct[];
         await products_repository.delete(products[0]._id);
         
-        InitializationVersion.set(12345);
-        InitializationVersion.setInProcess(12345);
+        InitializationVersion.set(otherVersion);
+        InitializationVersion.setInProcess(otherVersion);
         await cielo_tables_upsert_usecase.execute(latestVersion);
     });
 });
