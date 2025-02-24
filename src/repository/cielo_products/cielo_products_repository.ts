@@ -36,9 +36,9 @@ export class CieloProductsRepository implements INoSQLRepository<ICieloProduct> 
         throw new Error("Method not implemented.");
     }
 
-    async delete(): Promise<number | undefined> {
+    async delete(id?: ObjectId): Promise<number | undefined> {
         try {
-            const result = await this.collection?.deleteMany({});
+            const result = await this.collection?.deleteMany(id ? { _id: id } : {});
             return result?.deletedCount;
         } catch(err) {
             throw this.exception.handle(this.collection?.collectionName!, "delete");

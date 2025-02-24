@@ -42,7 +42,13 @@ export class InitializationEMVRepository implements INoSQLRepository<IInitializa
         }
     }
 
-    delete(id: ObjectId): Promise<number | undefined> {
-        throw new Error("Method not implemented.");
+    async delete(id?: ObjectId): Promise<number | undefined> {
+        try {
+            await this.init();
+            const result = await this.collection?.deleteMany();
+            return result?.deletedCount;
+        } catch(err) {
+            throw this.exception.handle(this.collection?.collectionName!, "delete", id || {});
+        }
     }
 }

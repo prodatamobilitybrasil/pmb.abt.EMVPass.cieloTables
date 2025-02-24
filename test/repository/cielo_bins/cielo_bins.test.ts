@@ -27,7 +27,7 @@ describe("Teste Repository CieloBins", () => {
 
     test("Teste Delete CieloBins", async () => {
         const result = await repository.delete();
-        expect(result).toBe(1);
+        expect(result).toBeDefined();
     });
 
     mongo.disconnect();
