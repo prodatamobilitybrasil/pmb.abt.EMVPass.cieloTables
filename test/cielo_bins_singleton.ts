@@ -1,0 +1,31 @@
+import { ICieloBin } from "../src/entities/cielo_bin";
+
+export const cielo_bins_singleton = {
+    Aid: 'A00000000305076010',
+    TagsFirst: '82849F279F269F36959F349F379F335F289F109A5F344F9F0B9F6E',
+    TagsSecond: '959F379F279F269F109F0B',
+    IdxRecord: 1,
+    Type: 0,
+    RCodeFirst: 'Y1Z1',
+    RCodeSecond: 'Y3Z3',
+    InvalidateFunctionIfCardIsOnBlacklist: true,
+    RequireBINToBeInCardRangeTable: false,
+    StoreTransactionsRejectedByTerminalAppAndSendToHost: true,
+    AllowOnlineAuthorizationTransactionRequest: false,
+    AllowExtendedCardHolderName: false,
+    NatEmvConctactRiskFloorLimit: 0,
+    NatEmvConctactRiskMinValue: 0,
+    NatEmvConctactRiskMinPercent: 0,
+    NatEmvConctactRiskMaxPercent: 0,
+    NatEmvConctactlessRiskFloorLimit: 0,
+    NatEmvConctactlessTransactionLimit: 9999999999,
+    NatEmvConctactlessCvmRequiredLimit: 20000,
+    IntEmvConctactRiskFloorLimit: 0,
+    IntEmvConctactRiskMinValue: 0,
+    IntEmvConctactRiskMinPercent: 0,
+    IntEmvConctactRiskMaxPercent: 0,
+    IntEmvConctactlessRiskFloorLimit: 0,
+    IntEmvConctactlessTransactionLimit: 0,
+    IntEmvConctactlessCvmRequiredLimit: 0,
+    ProductIds: [35]
+} as unknown as ICieloBin;

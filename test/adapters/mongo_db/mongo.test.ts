@@ -1,5 +1,5 @@
-import { MongoDB } from "../../src/infra/mongo_db/mongo_db.ts";
-import { IInitializationEMV } from "../../src/entities/initialization_emv.ts";
+import { MongoDB } from "../../../src/infra/mongo_db/mongo_db.ts";
+import { IInitializationEMV } from "../../../src/entities/initialization_emv.ts";
 import dotenv from "dotenv";
 
 dotenv.config()

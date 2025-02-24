@@ -1,0 +1,33 @@
+import { ICieloProduct } from "../src/entities/cielo_product";
+
+export const cielo_products_singleton = {
+    ProductId: 1,
+    ProductName: 'CREDITO VISA',
+    ProductType: 0,
+    BrandId: '1',
+    AllowTransactionWithContactlessCard: true,
+    IsFinancialProduct: true,
+    AllowOfflineAuthorizationForEMVCard: false,
+    AllowReprintReceipt: true,
+    AllowPrintReceipt: true,
+    AllowOfflineAuthorizationForContactlessCard: true,
+    AllowCancel: true,
+    AllowUndo: true,
+    AllowCaptureOfFirstInstallmentValue: false,
+    AllowCaptureOfDownpaymentValue: false,
+    AllowGuaranteeHandling: false,
+    AllowPostdatingTheFirstInstallmentForSaleAndCDCQuery: false,
+    AllowPostdating: false,
+    AllowCDCSale: false,
+    AllowFinancingByStore: false,
+    AllowFinancingByCreditCardCompany: true,
+    MaximumNumberOfInstallmentsWhenFinancingByCreditCardCompany: 49,
+    MaximumNumberOfInstallmentsWhenFinancingByStore: 0,
+    MaximumNumberOfinstallmentsForSaleAndCDCQuery: 0,
+    MinimumNumberOfInstallmentsWhenFinancingByStore: 500,
+    PostdatedSaleGuaranteeType: 'DoNotAllowSalesWithGuarantee',
+    PostdatedDayCountLimit: 0,
+    FirstInstallmentDayCountLimit: 0,
+    HostFlow: 1,
+    CurrencyConversion: false
+} as unknown as ICieloProduct;
