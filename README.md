@@ -1,4 +1,11 @@
 # EMV PASS - Cielo Tables
+
+<p align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=nodejs,ts,mongo,jest&perline=4" />
+  </a>
+</p>
+
 A aplicação Cielo Tables é responsável por gerenciar a atualização de informações sobre Products, Bins e EMVs da Cielo.
 
 Se trata de uma API REST que recebe solicitações de atualização destes dados, isolando esta regra de negócio do restante do fluxo, evitando processamento desnecessário e/ou sobreposto, desperdicio de recursos e inconsistencia dos dados, fazendo com que o restante do fluxo do EMV PASS seja responsável apenas pelo processamento de transações EMV.
